@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sample Page</title>
+</head>
+<body>
+<button id="btn">Click Me</button>
+<hr />
+<pre id="output">
+</pre>
+<script>
+function invokeApi() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', '/api/data', true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4) {
+      var status = xhr.status;
+      var data = xhr.responseText;
+
+      document.getElementById('output').textContent =
+        status + '\n----\n' + data;
+    }
+  }
+
+  var input = JSON.stringify({ timestamp: new Date() });
+  xhr.send(input);
+}
+
+document.getElementById('btn').addEventListener('click', invokeApi, false);
+</script>
+</html>
