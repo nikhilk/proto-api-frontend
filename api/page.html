@@ -9,9 +9,30 @@
 <pre id="output">
 </pre>
 <script>
+function getApiEndpoint() {
+  var apiDomain = '';
+
+  var cookies =
+    document.cookie.split(';').map(function(cookie) {
+      var parts = cookie.split('=');
+      return { name: parts[0].trim(), value: decodeURIComponent(parts[1]) };
+    })
+    .filter(function(cookie) {
+       return cookie.name == 'api';
+    });
+
+  if (cookies.length) {
+    apiDomain = '//' + cookies[0].value;
+  }
+
+  return apiDomain + '/api/data';
+}
+
 function invokeApi() {
+  var api = getApiEndpoint();
+
   var xhr = new XMLHttpRequest();
-  xhr.open('POST', '/api/data', true);
+  xhr.open('POST', api, true);
   xhr.setRequestHeader('Content-Type', 'application/json');
   xhr.onreadystatechange = function() {
     if (xhr.readyState == 4) {

@@ -1,9 +1,12 @@
 var fs = require('fs'),
     http = require('http');
 var express = require('express'),
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser'),
+    cors = require('cors');
 
-var API_PORT = 3976;
+var corsPolicy = {
+  origin: process.env.SRV_ADDR
+};
 
 function dataHandler(request, response) {
   response.json(request.body);
@@ -12,6 +15,7 @@ function dataHandler(request, response) {
 
 function createApplication() {
   var app = express();
+  app.use(cors(corsPolicy));
   app.use(bodyParser.json());
   app.use('/content', express.static('.'));
 
@@ -24,7 +28,7 @@ function main(port) {
   var app = createApplication();
   var server = http.createServer(app);
 
-  server.listen(API_PORT, '127.0.0.1');
+  server.listen(parseInt(process.env.API_PORT), process.env.API_HOST);
 }
 
 main();
