@@ -8,3 +8,5 @@ export API_HOST=127.0.0.1
 export API_PORT=3976
 export API_ADDR=http://$API_HOST:$API_PORT
 
+export API_SECRET=secret
+
