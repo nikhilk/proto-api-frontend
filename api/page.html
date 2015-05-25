@@ -10,42 +10,34 @@
 </pre>
 <script>
 function getApiInfo() {
-  var apiDomain = '';
-  var apiAuth = '';
-
   var cookies =
     document.cookie.split(';').map(function(cookie) {
       var parts = cookie.split('=');
       return { name: parts[0].trim(), value: decodeURIComponent(parts[1]) };
     })
+    .filter(function(cookie) {
+      return cookie.name == 'api';
+    });
 
-  var authCookies = cookies.filter(function(cookie) {
-    return cookie.name == 'auth';
-  });
-  var apiCookies = cookies.filter(function(cookie) {
-    return cookie.name == 'api';
-  });
-
-  if (authCookies.length) {
-    apiAuth = authCookies[0].value;
-  }
-  if (apiCookies.length) {
-    apiDomain = '//' + apiCookies[0].value;
+  if (cookies.length) {
+    return JSON.parse(cookies[0].value);
   }
 
-  return {
-    endpoint: apiDomain + '/api/data',
-    auth: apiAuth
-  };
+  return null;
 }
 
 function invokeApi() {
+  var url = '/api/data';
+
   var api = getApiInfo();
+  if (api) {
+    url = 'http://' + api.domain + url;
+  }
 
   var xhr = new XMLHttpRequest();
-  xhr.open('POST', api.endpoint, true);
+  xhr.open('POST', url, true);
   xhr.setRequestHeader('Content-Type', 'application/json');
-  if (api.auth) {
+  if (api) {
     xhr.setRequestHeader('Authorization', api.auth);
   }
   xhr.onreadystatechange = function() {
