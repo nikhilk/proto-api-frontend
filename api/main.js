@@ -15,7 +15,13 @@ function requireAuthorization(request, response, next) {
   var auth = request.headers['authorization'];
   if (auth) {
     try {
-      var authData = jwt.decode(auth, process.env.API_SECRET);
+      request.user = jwt.decode(auth, process.env.API_SECRET);
+
+      // TODO - More authorization logic
+      // 1. Check the project in authData matches
+      // 2. Use the userid to do a DataStore lookup for an entity of kind [app]creds and with a
+      //    key matching userid for access token and refresh token
+
       authorized = true;
     }
     catch(e) {
@@ -31,8 +37,18 @@ function requireAuthorization(request, response, next) {
   next();
 }
 
+function addApiDomainCookie(request, response, next) {
+  response.cookie('apidomain', process.env.API_ADDR);
+  next();
+}
+
 function dataHandler(request, response) {
-  response.json(request.body);
+  var result = {
+    data: request.body,
+    user: request.user
+  };
+
+  response.json(result);
   response.end();
 }
 
@@ -41,7 +57,7 @@ function createApplication() {
   app.use(cors(corsPolicy));
   app.use(bodyParser.json());
 
-  app.use('/content', requireAuthorization, express.static('.'));
+  app.use('/content', requireAuthorization, addApiDomainCookie, express.static('.'));
   app.post('/api/data', requireAuthorization, dataHandler);
 
   return app;
@@ -55,4 +71,3 @@ function main(port) {
 }
 
 main();
-
