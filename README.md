@@ -56,3 +56,24 @@ The API server doesn't do its own authentication. It simply checks for an Author
 It decodes those headers using the shared secret it was assigned when the VM hosting this server was created by the frontend. This ensures a first check of validity - that the authorization header was produced by the frontend, and meant to be consumed on the particular VM.
 
 The API server uses the userid in the authorization header, its known VM name (something it knows, rather than coming externally), and looks up its db for OAuth tokens when making requests on behalf of the user. These were stored by the frontend server.
+
+## Running the Prototype
+
+**Step 1** - Create a Google Cloud Project (if needed). This will be used to create a registered OAuth client - specifically a web-based OAuth client. You'll also need to configure its OAuth Consent Screen properties.
+
+**Step 2** - Download the JSON description of your OAuth client registration and name it secrets.json within the frontend directory.
+
+**Step 3** - Start the API Server (since in this prototype, the frontend does not spin up API servers). In a terminal prompt:
+
+    source setup.sh
+    node api/main.js
+
+**Step 4** - Start the Frontend Server (in another terminal prompt)
+
+    source setup.sh
+    node frontend/main.js
+    
+**Step 5** - Browse to the Frontend (assuming no ports were changed in setup.sh)
+
+    http://127.0.0.1:6908/[selected project name]
+
