@@ -3,27 +3,41 @@ var express = require('express'),
     jwt = require('jwt-simple'),
     util = require('util');
 
+// Determines which requests are forwardable to the API server.
 function proxyFilter(request, response) {
+  // The only expected content retrieved by the API server are
+  // the individual content pages that are navigated to by the browser, hence the check for
+  // 'GET' requests.
   return request.method == 'GET';
 }
 
+// Produces the path to forward requests to as part of the proxying implementation.
 function proxyRule(request, response) {
+  // Include the value of the APIAuth cookie as the Authorization header.
+  // The API server requires this header on all requests to it.
   request.headers['Authorization'] = request.cookies.apiauth;
+
+  // For each request path being forward, the expectation is the API server
+  // serves it using the equivalent path under the /content root.
   return '/content' + request.path;
 }
 
+// Intercepts the outgoing proxy requests.
 function proxyForwarding(request) {
-  // Don't forward cookies associated with this server to the API server
+  // Don't forward cookies associated with this server to the API server.
   request.headers['cookie'] = '';
 }
 
+// Customizes the OAuth flow that is starting.
 function authenticatingHandler(request) {
+  // Produce the state that will be tracked as part of the OAuth flow.
   return {
     project: request.project,
     url: '/' + request.project
   };
 }
 
+// Customizes the OAuth flow that has successfully completed.
 function authenticatedHandler(response, state, userInfo, accessToken, refreshToken) {
   // 1. Check this app's DataStore for a shared secret for the user's project
   //    (kind = [app]vm_secrets, key = project)
@@ -47,13 +61,18 @@ function authenticatedHandler(response, state, userInfo, accessToken, refreshTok
     userid: userInfo.email
   };
 
+  // Produce the API cookie to contain the authorization header that client can use
+  // to issue requests to APIs directly.
   var apiCookie = jwt.encode(user, process.env.SHARED_SECRET);
   response.cookie('apiauth', apiCookie);
 
+  // Produce the user object that will be tracked as a cookie.
   return user;
 }
 
+// Implements the handler for the '/' path.
 function defaultHandler(request, response) {
+  // Simply redirect to the 'home.html' path, while preserving the project root.
   var homePath = util.format('/%s/home.html', request.project);
 
   response.redirect(302, homePath);
@@ -80,6 +99,14 @@ function main(port) {
   var router = express.Router();
   router.get('/', defaultHandler);
 
+  // Create an application with the following behavior:
+  // - all paths are considered to be project prefixed. The project middleware
+  //   extracts the project and stashes it on the request, rewrites the request url. If no
+  //   project can be inferred, the request processing is ended with a 400 status.
+  // - all requests must be associated with a user, and if no user information is available
+  //   then an OAuth flow is triggered by the oauth middleware.
+  // - all requests under /content are proxied to the API server.
+  // - all other requests are attempted to be served using static files.
   var app = express();
   app.use(require('cookie-parser')())
      .use(require('body-parser').json())
