@@ -1,0 +1,23 @@
+title Initial Request
+
+User->+Frontend: /project
+Frontend-->-User: Redirect to Auth URL
+User->+Google Auth: Start Auth Flow
+Google Auth-->-User: Consent Screen
+User->+Google Auth: SignIn + Accept
+Google Auth-->-User: Redirect to /auth
+User->+Frontend: /auth
+Frontend->+Google Auth: Exchange code for tokens
+Google Auth-->-Frontend: Tokens
+Frontend->+Google APIs: Get User Info
+Google APIs-->-Frontend: User Info
+Frontend->+DataStore: Query entity (kind = secrets, key=project)
+DataStore-->-Frontend: Entity or 404
+Frontend->DataStore: Create UUID and save as Entity (if needed)
+Frontend->DataStore (Project): Create Entity (kind = creds, key = userid, cols = OAuth tokens)
+Frontend->Compute (Project): Create VM
+Frontend->Compute (Project): Set shared secret metadata
+Frontend-->-User: Redirect to /project/home.html (+ auth and api cookies)
+User->+Frontend: /project/home.html (+ cookies)
+Frontend-->-User: Initial UX screen
+

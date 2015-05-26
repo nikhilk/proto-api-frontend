@@ -1,0 +1,11 @@
+title Signed-in Requests
+
+User->+Frontend: /project/home.html (+ Auth and API cookies)
+Frontend-->-User: Home page content
+User->+Frontend: /project/content/page.html (+ Auth and API cookies)
+Frontend->+API: /content/page.html (+ Auth Header)
+API-->-Frontend: Page content (+ Domain cookie)
+Frontend-->-User: Page content (+ Auth, API and Domain cookies)
+User->+API: http://[Domain Cookie]/api/data (+ API Cookie as Auth Header)
+API-->-User: API response
+
