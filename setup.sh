@@ -1,7 +1,7 @@
 #!/bin/sh
 
 export SRV_HOST=127.0.0.1
-export SRV_PORT=6908
+export SRV_PORT=8888
 export SRV_ADDR=http://$SRV_HOST:$SRV_PORT
 
 export API_HOST=127.0.0.1
