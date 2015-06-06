@@ -15,6 +15,8 @@ Nice-to-have goals:
 - The frontend does not see any private user-owned data because it flows directly from the browser to the API server that is owned by the user.
 - All credentials (OAuth tokens) are only stored in the backend (never transmitted to the client), and additionally, only stored within the API server project, and never on the shared frontend project.
 
+![Diagram](images/Diagram.png)
+
 ## Initial Request
 
 This represents the request/response flow for the initial set of requests to authenticate the user, between the browser and the frontend server.
