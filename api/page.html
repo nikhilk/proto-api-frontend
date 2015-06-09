@@ -28,10 +28,10 @@ function getApiInfo() {
     });
 
   if (authCookies.length) {
-    api.auth = authCookies[0].value
+    api.auth = authCookies[0].value;
   }
   if (domainCookies.length) {
-    api.domain = domainCookies[0].value
+    api.domain = domainCookies[0].value;
   }
 
   return api;
