@@ -13,7 +13,7 @@ The goals/constraints are:
 
 - The user is always browsing to the frontend server, i.e. the URL shown in the
  browser's addressbar always refers to the frontend server.
-- The user only signs in once, i.e. when browsing to the frontend server.
+- The user needs to sign in once, i.e. when browsing to the frontend server.
 - The pages can make API requests directly to the API server, without needing
 an intermediate proxy, so as to avoid latency, load of long-lived connections
 on the shared frontend server, and bandwidth consumption by the frontend.
